@@ -1,4 +1,4 @@
-# Claude Code Rules
+﻿# Claude Code Rules
 
 This file is generated during init for the selected agent.
 
@@ -208,3 +208,129 @@ Wait for consent; never auto-create ADRs. Group related decisions (stacks, authe
 
 ## Code Standards
 See `.specify/memory/constitution.md` for code quality, testing, performance, security, and architecture principles.
+
+## Project-Specific Context: Todo CLI Application
+
+### Technology Stack
+- **Language**: Python 3.13+
+- **Package Manager**: UV
+- **Testing**: pytest with pytest-cov (80%+ coverage required)
+- **Linting/Formatting**: Ruff
+- **Storage**: In-memory (dict/list data structures)
+- **Architecture**: Simple CLI with clean separation of concerns
+
+### Project Structure
+```
+src/
+├── models/         # Data entities (Task) and exceptions
+├── services/       # Business logic (TaskService for CRUD)
+├── cli/            # CLI interface (commands, formatter)
+└── main.py         # Application entry point
+
+tests/
+├── unit/           # Unit tests for models and services
+└── integration/    # End-to-end CLI tests
+```
+
+### Running the Application
+```bash
+# Add a task
+python -m src.main add "Task title" "Optional description"
+
+# List all tasks
+python -m src.main list
+
+# Mark complete/incomplete
+python -m src.main complete 1
+python -m src.main incomplete 1
+
+# Update task
+python -m src.main update 1 --title "New title" --description "New desc"
+
+# Delete task
+python -m src.main delete 1
+```
+
+### Running Tests
+```bash
+# All tests with coverage
+pytest --cov=src --cov-report=term-missing
+
+# Specific test files
+pytest tests/unit/test_task.py
+pytest tests/unit/test_task_service.py
+```
+
+### Code Quality
+```bash
+# Lint
+ruff check src/ tests/
+
+# Format
+ruff format src/ tests/
+```
+
+### Key Implementation Notes
+
+1. **In-Memory Storage Only**: 
+   - All data stored in `TaskService._tasks` dictionary
+   - Data lost on application exit (by design)
+   - Task IDs never reused after deletion
+
+2. **Task Model Validation**:
+   - Title: 1-500 chars, required, non-empty after strip
+   - Description: 0-2000 chars, optional
+   - ID: Auto-generated, sequential, positive integer
+   - Status: Boolean (True = complete, False = incomplete)
+
+3. **TDD Approach**:
+   - All features implemented with tests-first
+   - Red → Green → Refactor workflow
+   - 80%+ code coverage maintained
+
+4. **CLI Design**:
+   - argparse for command parsing
+   - Subcommands: add, list, update, delete, complete, incomplete
+   - Unicode status indicators: ✓ (complete), ○ (incomplete)
+   - Clear error messages with appropriate exit codes
+
+5. **Error Handling**:
+   - ValidationError: Invalid input (empty title, too long, etc.)
+   - TaskNotFoundError: Task ID doesn't exist
+   - Exit codes: 0 (success), 1 (error), 2 (invalid usage)
+
+### Constitution Compliance
+
+This project follows the Phase 1 Todo App Constitution:
+
+- ✅ **Simplicity First**: No frameworks, standard library only
+- ✅ **In-Memory Storage**: Python dict/list, no persistence
+- ✅ **Test-First Development**: TDD mandatory, 80%+ coverage
+- ✅ **Clean Python Structure**: /src and /tests separation
+- ✅ **Spec-Driven Development**: Full workflow followed
+- ✅ **Five Core Operations Only**: No feature creep
+
+### Implementation Status
+
+- ✅ Phase 1: Setup - Project structure initialized
+- ✅ Phase 2: Foundational - Task model & TaskService implemented
+- ✅ Phases 3-7: User Stories - All 5 operations implemented
+- ✅ Phase 8: CLI Integration - Main entry point complete
+- ✅ Phase 9: Documentation - README and CLAUDE.md updated
+
+### Next Steps for Future Phases
+
+Phase 2 (Future):
+- Add file persistence (JSON/SQLite)
+- Task categories/tags
+- Due dates and reminders
+- Search and filter
+- Priority levels
+
+Phase 3 (Future):
+- Web interface
+- Multi-user support
+- Task dependencies
+- Recurring tasks
+- Import/export functionality
+
