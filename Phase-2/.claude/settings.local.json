@@ -18,7 +18,9 @@
       "Bash(powershell:*)",
       "Skill(sp.analyze)",
       "Bash(.specify/scripts/bash/create-phr.sh:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
